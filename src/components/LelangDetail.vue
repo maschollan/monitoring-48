@@ -1,18 +1,18 @@
 <template>
   <div class="p-3 my-2 collapse-detail-box border-start border-4 border-primary">
-    <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
-      <div class="d-flex align-items-center gap-2">
-        <i class="bi bi-diagram-3-fill text-primary"></i>
+    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-diagram-3-fill text-primary me-2 fs-6"></i>
         <strong class="text-dark small">Rincian Dokumen Lelang Perkara</strong>
-        <span class="text-muted small">({{ nomorRegister }})</span>
+        <span class="text-muted small ms-2">({{ nomorRegister }})</span>
       </div>
       <button
         type="button"
-        class="btn btn-sm btn-outline-secondary py-0 px-2"
+        class="btn btn-sm btn-outline-secondary py-1 px-3"
         style="font-size: 0.75rem;"
         @click="$emit('close')"
       >
-        <i class="bi bi-x-lg me-1"></i>Tutup
+        <i class="bi bi-x-lg me-2"></i>Tutup
       </button>
     </div>
 

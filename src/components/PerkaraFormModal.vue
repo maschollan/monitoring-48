@@ -9,8 +9,8 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content shadow-lg border-0 rounded-3">
         <div class="modal-header bg-light border-bottom py-3">
-          <h5 class="modal-title fs-6 fw-bold text-dark d-flex align-items-center gap-2">
-            <i :class="isEdit ? 'bi-pencil-square text-primary' : 'bi-plus-circle-fill text-success'"></i>
+          <h5 class="modal-title fs-6 fw-bold text-dark d-flex align-items-center">
+            <i :class="isEdit ? 'bi-pencil-square text-primary' : 'bi-plus-circle-fill text-success'" class="me-2 fs-6"></i>
             {{ isEdit ? 'Edit Data Perkara' : 'Tambah Perkara Baru' }}
           </h5>
           <button type="button" class="btn-close" @click="closeModal"></button>
@@ -19,8 +19,8 @@
         <form @submit.prevent="handleSubmit">
           <div class="modal-body p-4">
             <!-- Alert Error -->
-            <div v-if="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 small mb-3">
-              <i class="bi bi-exclamation-triangle-fill"></i>
+            <div v-if="errorMessage" class="alert alert-danger d-flex align-items-center py-2 px-3 small mb-3">
+              <i class="bi bi-exclamation-triangle-fill me-2 fs-6"></i>
               <div>{{ errorMessage }}</div>
             </div>
 
@@ -81,13 +81,13 @@
             </div>
           </div>
 
-          <div class="modal-footer bg-light py-2.5 px-4 border-top">
+          <div class="modal-footer bg-light py-3 px-4 border-top">
             <button type="button" class="btn btn-sm btn-outline-secondary px-3" @click="closeModal">
               Batal
             </button>
             <button type="submit" class="btn btn-sm btn-primary px-4 shadow-sm" :disabled="submitting">
-              <span v-if="submitting" class="spinner-border spinner-border-sm me-1"></span>
-              <i v-else class="bi bi-check-lg me-1"></i>
+              <span v-if="submitting" class="spinner-border spinner-border-sm me-2"></span>
+              <i v-else class="bi bi-check-lg me-2"></i>
               {{ isEdit ? 'Simpan Perubahan' : 'Tambah Perkara' }}
             </button>
           </div>

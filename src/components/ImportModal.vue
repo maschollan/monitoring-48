@@ -10,9 +10,9 @@
       <div class="modal-content shadow-lg border-0 rounded-3">
         <!-- Header -->
         <div class="modal-header bg-light border-bottom py-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="p-2 bg-primary bg-opacity-10 text-primary rounded">
-              <i class="bi bi-file-earmark-spreadsheet-fill fs-5"></i>
+          <div class="d-flex align-items-center gap-3">
+            <div class="p-3 bg-primary bg-opacity-10 text-primary rounded d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+              <i class="bi bi-file-earmark-spreadsheet-fill fs-4"></i>
             </div>
             <div>
               <h5 class="modal-title fs-6 fw-bold text-dark mb-0">Import Data Perkara (CSV / TXT)</h5>
@@ -29,22 +29,22 @@
           <ul class="nav nav-tabs mb-3" role="tablist">
             <li class="nav-item" role="presentation">
               <button
-                class="nav-link"
+                class="nav-link d-flex align-items-center"
                 :class="{ active: activeTab === 'upload' }"
                 type="button"
                 @click="setTab('upload')"
               >
-                <i class="bi bi-cloud-arrow-up-fill me-1.5"></i>Tab 1 — Upload File (.csv, .txt)
+                <i class="bi bi-cloud-arrow-up-fill me-2"></i>Tab 1 — Upload File (.csv, .txt)
               </button>
             </li>
             <li class="nav-item" role="presentation">
               <button
-                class="nav-link"
+                class="nav-link d-flex align-items-center"
                 :class="{ active: activeTab === 'paste' }"
                 type="button"
                 @click="setTab('paste')"
               >
-                <i class="bi bi-clipboard2-plus-fill me-1.5"></i>Tab 2 — Paste CSV
+                <i class="bi bi-clipboard2-plus-fill me-2"></i>Tab 2 — Paste CSV
               </button>
             </li>
           </ul>
@@ -53,8 +53,8 @@
           <div v-if="activeTab === 'upload'" class="mb-4">
             <div class="p-4 border border-2 border-dashed rounded-3 text-center bg-light">
               <i class="bi bi-filetype-csv fs-1 text-primary mb-2 d-block"></i>
-              <label for="csvFileInput" class="btn btn-sm btn-primary px-3 shadow-sm mb-2 cursor-pointer">
-                <i class="bi bi-folder2-open me-1"></i>Pilih File CSV / TXT
+              <label for="csvFileInput" class="btn btn-sm btn-primary px-3 shadow-sm mb-2 cursor-pointer d-inline-flex align-items-center">
+                <i class="bi bi-folder2-open me-2"></i>Pilih File CSV / TXT
               </label>
               <input
                 id="csvFileInput"
@@ -75,11 +75,11 @@
               <label class="form-label mb-0 fw-semibold">Paste Teks CSV (Delimiter Titik-Koma: <code>;</code>)</label>
               <button
                 type="button"
-                class="btn btn-link btn-sm text-decoration-none py-0"
+                class="btn btn-link btn-sm text-decoration-none py-0 d-inline-flex align-items-center"
                 style="font-size: 0.75rem;"
                 @click="insertSampleCSV"
               >
-                <i class="bi bi-magic me-1"></i>Isi Contoh CSV
+                <i class="bi bi-magic me-2"></i>Isi Contoh CSV
               </button>
             </div>
             <textarea
@@ -98,19 +98,19 @@
           <div class="d-flex gap-2 mb-3">
             <button
               type="button"
-              class="btn btn-sm btn-outline-primary px-3 shadow-sm"
+              class="btn btn-sm btn-outline-primary px-3 shadow-sm d-inline-flex align-items-center"
               :disabled="!hasContentToParse"
               @click="handlePreview"
             >
-              <i class="bi bi-eye-fill me-1"></i>Preview Data
+              <i class="bi bi-eye-fill me-2"></i>Preview Data
             </button>
             <button
               v-if="parseResult"
               type="button"
-              class="btn btn-sm btn-outline-secondary px-2"
+              class="btn btn-sm btn-outline-secondary px-3 d-inline-flex align-items-center"
               @click="resetPreview"
             >
-              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Preview
+              <i class="bi bi-arrow-counterclockwise me-2"></i>Reset Preview
             </button>
           </div>
 
@@ -118,28 +118,28 @@
           <div v-if="parseResult" class="border rounded-3 p-3 bg-white mt-3">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom">
               <div class="d-flex align-items-center gap-3 flex-wrap">
-                <span class="badge bg-secondary p-2">
-                  <i class="bi bi-list-ol me-1"></i>Total Baris: {{ parseResult.totalRows }}
+                <span class="badge bg-secondary p-2 d-inline-flex align-items-center">
+                  <i class="bi bi-list-ol me-2"></i>Total Baris: {{ parseResult.totalRows }}
                 </span>
-                <span class="badge bg-success p-2">
-                  <i class="bi bi-check-circle-fill me-1"></i>Data Valid: {{ parseResult.valid.length }}
+                <span class="badge bg-success p-2 d-inline-flex align-items-center">
+                  <i class="bi bi-check-circle-fill me-2"></i>Data Valid: {{ parseResult.valid.length }}
                 </span>
-                <span v-if="parseResult.invalid.length > 0" class="badge bg-danger p-2">
-                  <i class="bi bi-x-circle-fill me-1"></i>Data Invalid: {{ parseResult.invalid.length }}
+                <span v-if="parseResult.invalid.length > 0" class="badge bg-danger p-2 d-inline-flex align-items-center">
+                  <i class="bi bi-x-circle-fill me-2"></i>Data Invalid: {{ parseResult.invalid.length }}
                 </span>
-                <span v-if="parseResult.duplicates.length > 0" class="badge bg-warning text-dark p-2">
-                  <i class="bi bi-copy me-1"></i>Duplikat Internal CSV: {{ parseResult.duplicates.length }}
+                <span v-if="parseResult.duplicates.length > 0" class="badge bg-warning text-dark p-2 d-inline-flex align-items-center">
+                  <i class="bi bi-copy me-2"></i>Duplikat Internal CSV: {{ parseResult.duplicates.length }}
                 </span>
               </div>
-              <div class="text-muted small">
-                <i class="bi bi-info-circle me-1"></i>Periksa kelengkapan sebelum menekan tombol Import Data.
+              <div class="text-muted small d-flex align-items-center">
+                <i class="bi bi-info-circle me-2 text-primary"></i>Periksa kelengkapan sebelum menekan tombol Import Data.
               </div>
             </div>
 
             <!-- Error List if any -->
             <div v-if="parseResult.invalid.length > 0" class="alert alert-danger py-2 px-3 small mb-3">
-              <div class="fw-bold mb-1 d-flex align-items-center gap-1">
-                <i class="bi bi-exclamation-triangle-fill"></i> Terdapat {{ parseResult.invalid.length }} baris data tidak valid (tidak akan diimport):
+              <div class="fw-bold mb-1 d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-6"></i> Terdapat {{ parseResult.invalid.length }} baris data tidak valid (tidak akan diimport):
               </div>
               <ul class="mb-0 ps-3">
                 <li v-for="(inv, i) in parseResult.invalid.slice(0, 5)" :key="i">
@@ -154,7 +154,7 @@
 
             <!-- Duplicates Note -->
             <div v-if="parseResult.duplicates.length > 0" class="alert alert-warning py-2 px-3 small mb-3">
-              <i class="bi bi-info-circle-fill me-1"></i> Terdapat {{ parseResult.duplicates.length }} nomor register yang muncul lebih dari sekali di dalam file ini. Sistem secara otomatis mengambil versi data terakhir.
+              <i class="bi bi-info-circle-fill me-2"></i> Terdapat {{ parseResult.duplicates.length }} nomor register yang muncul lebih dari sekali di dalam file ini. Sistem secara otomatis mengambil versi data terakhir.
             </div>
 
             <!-- Table Preview Valid Data -->
@@ -192,7 +192,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="modal-footer bg-light py-2.5 px-4 border-top d-flex justify-content-between">
+        <div class="modal-footer bg-light py-3 px-4 border-top d-flex justify-content-between">
           <button type="button" class="btn btn-sm btn-outline-secondary px-3" @click="closeModal">
             Tutup
           </button>
@@ -202,8 +202,8 @@
             :disabled="!parseResult || parseResult.valid.length === 0 || importing"
             @click="executeImport"
           >
-            <span v-if="importing" class="spinner-border spinner-border-sm me-1"></span>
-            <i v-else class="bi bi-cloud-arrow-up-fill me-1"></i>
+            <span v-if="importing" class="spinner-border spinner-border-sm me-2"></span>
+            <i v-else class="bi bi-cloud-arrow-up-fill me-2"></i>
             {{ importing ? 'Mengimport Data...' : `Import / Simpan Data (${parseResult ? parseResult.valid.length : 0})` }}
           </button>
         </div>

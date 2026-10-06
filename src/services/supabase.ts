@@ -123,4 +123,57 @@ CREATE POLICY "Akses publik perkara" ON public.perkara
 
 CREATE POLICY "Akses publik ba20_penerima" ON public.ba20_penerima
     FOR ALL USING (true) WITH CHECK (true);
+
+-- 5. Aktifkan Realtime Replication untuk Perkara & Penerima
+ALTER PUBLICATION supabase_realtime ADD TABLE public.perkara;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.ba20_penerima;
 `;
+
+/**
+ * Subscribe ke Supabase Realtime bawaan postgres_changes
+ */
+export function subscribeToRealtimeChanges(
+  onChange: (table: string, payload: any) => void,
+  onStatusChange?: (status: string) => void
+): () => void {
+  const supabase = getSupabase();
+  if (!supabase) {
+    if (onStatusChange) onStatusChange('OFFLINE_LOCAL');
+    return () => {};
+  }
+
+  const channel = supabase
+    .channel('perkara-realtime-channel')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'perkara',
+      },
+      (payload) => {
+        onChange('perkara', payload);
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'ba20_penerima',
+      },
+      (payload) => {
+        onChange('ba20_penerima', payload);
+      }
+    )
+    .subscribe((status) => {
+      if (onStatusChange) {
+        onStatusChange(status);
+      }
+    });
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}
+

@@ -13,6 +13,106 @@ body {
   min-height: 100vh;
 }
 
+/* =========================================================
+   BOOTSTRAP ICONS POLISH & SPACING ADJUSTMENTS
+   ========================================================= */
+i.bi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: -0.125em;
+}
+
+/* Spacing when icon is before text inside buttons, badges, and alerts */
+.btn > i.bi:first-child:not(:only-child) {
+  margin-right: 0.5rem;
+}
+
+.btn > i.bi:last-child:not(:only-child) {
+  margin-left: 0.5rem;
+}
+
+.badge > i.bi:first-child:not(:only-child) {
+  margin-right: 0.35rem;
+}
+
+.badge > i.bi:last-child:not(:only-child) {
+  margin-left: 0.35rem;
+}
+
+.alert i.bi:first-child:not(:only-child) {
+  margin-right: 0.55rem;
+  font-size: 1.15em;
+  flex-shrink: 0;
+}
+
+/* Standalone icon wrappers */
+.icon-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Live pulsing dot indicator for Supabase Realtime */
+.realtime-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.realtime-dot.connected {
+  background-color: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse-green 2s infinite;
+}
+
+.realtime-dot.connecting {
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+  animation: pulse-green 2s infinite;
+}
+
+.realtime-dot.disconnected {
+  background-color: #94a3b8;
+  animation: none;
+}
+
+.spin-sync {
+  display: inline-block;
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-green {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
 /* Badge selector dropdown styling */
 .status-badge-select {
   border-radius: 9999px;

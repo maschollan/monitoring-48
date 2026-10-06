@@ -4,6 +4,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    base: './',
     plugins: [vue()],
     resolve: {
       alias: {

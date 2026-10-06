@@ -134,8 +134,8 @@
                 <div class="fw-bold text-dark font-monospace text-break" style="font-size: 0.85rem;">
                   {{ item.nomor_surat }}
                 </div>
-                <div class="text-primary small font-monospace d-flex align-items-center gap-1" style="font-size: 0.76rem;" title="Nomor Register Perkara (Unique Identifier)">
-                  <i class="bi bi-hash"></i>
+                <div class="text-primary small font-monospace d-flex align-items-center gap-1 mt-1" style="font-size: 0.76rem;" title="Nomor Register Perkara (Unique Identifier)">
+                  <i class="bi bi-hash text-muted me-1"></i>
                   <span>{{ item.nomor_register_perkara }}</span>
                 </div>
               </td>
@@ -167,12 +167,12 @@
                   <button
                     v-if="getLelangStatus(item) !== 'tidak_ada'"
                     type="button"
-                    class="btn btn-link btn-sm p-0 text-decoration-none d-flex align-items-center gap-1"
+                    class="btn btn-link btn-sm p-0 text-decoration-none d-flex align-items-center gap-1 mt-1"
                     style="font-size: 0.72rem;"
                     @click="toggleCollapseLelang(item.id)"
                   >
                     <span>Rincian B-18/BA-21/BA-22</span>
-                    <i :class="activeCollapseLelang === item.id ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                    <i :class="activeCollapseLelang === item.id ? 'bi-chevron-up' : 'bi-chevron-down'" class="ms-1"></i>
                   </button>
                 </div>
               </td>
@@ -191,13 +191,13 @@
                   <button
                     v-if="item.ba20_status === 'ada'"
                     type="button"
-                    class="btn btn-sm btn-outline-success py-0.5 px-2 mt-0.5 d-flex align-items-center gap-1"
+                    class="btn btn-sm btn-outline-success py-1 px-3 mt-1 d-flex align-items-center"
                     style="font-size: 0.72rem; border-radius: 9999px;"
                     @click="toggleCollapseBA20(item.id)"
                   >
-                    <i class="bi bi-people-fill"></i>
+                    <i class="bi bi-people-fill me-2"></i>
                     <span>Detail Penerima ({{ (item.penerima || []).length }})</span>
-                    <i :class="activeCollapseBA20 === item.id ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                    <i :class="activeCollapseBA20 === item.id ? 'bi-chevron-up' : 'bi-chevron-down'" class="ms-2"></i>
                   </button>
                 </div>
               </td>
@@ -225,7 +225,7 @@
                 <div class="btn-group btn-group-sm">
                   <button
                     type="button"
-                    class="btn btn-outline-primary btn-sm py-1 px-1.5"
+                    class="btn btn-outline-primary btn-sm py-1 px-2"
                     title="Edit Data Perkara"
                     @click="$emit('edit-perkara', item)"
                   >
@@ -233,7 +233,7 @@
                   </button>
                   <button
                     type="button"
-                    class="btn btn-outline-danger btn-sm py-1 px-1.5"
+                    class="btn btn-outline-danger btn-sm py-1 px-2"
                     title="Hapus Perkara"
                     @click="$emit('delete-perkara', item)"
                   >
@@ -265,7 +265,7 @@
                   :perkara-id="item.id"
                   :nomor-register="item.nomor_register_perkara"
                   :penerima-list="item.penerima || []"
-                  @open-add-penerima="(id) => $emit('open-add-penerima', id)"
+                  @add-penerima="(p) => $emit('add-penerima', p)"
                   @edit-penerima="(p) => $emit('edit-penerima', p)"
                   @delete-penerima="(p) => $emit('delete-penerima', p)"
                   @update-penerima-status="(p) => $emit('update-penerima-status', p)"
@@ -293,7 +293,7 @@
             <ul class="pagination pagination-sm mb-0 justify-content-end">
               <li class="page-item" :class="{ disabled: currentPage === 1 }">
                 <button class="page-link" @click="currentPage--" :disabled="currentPage === 1">
-                  <i class="bi bi-chevron-left me-1"></i>Sebelumnya
+                  <i class="bi bi-chevron-left me-2"></i>Sebelumnya
                 </button>
               </li>
 
@@ -311,7 +311,7 @@
 
               <li class="page-item" :class="{ disabled: currentPage === totalPages || totalPages === 0 }">
                 <button class="page-link" @click="currentPage++" :disabled="currentPage === totalPages || totalPages === 0">
-                  Berikutnya<i class="bi bi-chevron-right ms-1"></i>
+                  Berikutnya<i class="bi bi-chevron-right ms-2"></i>
                 </button>
               </li>
             </ul>
@@ -346,7 +346,7 @@ export default {
     'edit-perkara',
     'delete-perkara',
     'update-status',
-    'open-add-penerima',
+    'add-penerima',
     'edit-penerima',
     'delete-penerima',
     'update-penerima-status',

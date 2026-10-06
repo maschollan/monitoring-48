@@ -8,9 +8,12 @@
       :ba23-count="ba23Count"
       :pendapat-hukum-count="pendapatHukumCount"
       :is-supabase-connected="isSupabaseConnected"
+      :realtime-status="realtimeStatus"
+      :is-syncing="isSyncing"
       @open-add-perkara="openAddPerkaraModal"
       @open-import-modal="showImportModal = true"
       @open-supabase-modal="showSupabaseModal = true"
+      @sync-refresh="handleSyncRefresh"
     />
 
     <!-- Main Container: Focus on DataTables -->
@@ -29,8 +32,8 @@
           @edit-perkara="openEditPerkaraModal"
           @delete-perkara="confirmDeletePerkara"
           @update-status="handleUpdateStatus"
-          @open-add-penerima="openAddPenerimaModal"
-          @edit-penerima="openEditPenerimaModal"
+          @add-penerima="handleAddPenerima"
+          @edit-penerima="handleEditPenerima"
           @delete-penerima="confirmDeletePenerima"
           @update-penerima-status="handleUpdatePenerimaStatus"
         />
@@ -61,16 +64,7 @@
       @imported="handleImportData"
     />
 
-    <!-- MODAL 3: Penerima BA-20 (Add / Edit) -->
-    <penerima-modal
-      :show="showPenerimaModal"
-      :perkara-id="activePerkaraIdForPenerima"
-      :penerima="selectedPenerima"
-      @close="closePenerimaModal"
-      @save="handleSavePenerima"
-    />
-
-    <!-- MODAL 4: Supabase Config & SQL Schema -->
+    <!-- MODAL 3: Supabase Config & SQL Schema -->
     <supabase-config-modal
       :show="showSupabaseModal"
       @close="showSupabaseModal = false"
@@ -83,12 +77,11 @@
 import Swal from 'sweetalert2';
 import ImportModal from './components/ImportModal.vue';
 import NavbarHeader from './components/NavbarHeader.vue';
-import PenerimaModal from './components/PenerimaModal.vue';
 import PerkaraFormModal from './components/PerkaraFormModal.vue';
 import PerkaraTable from './components/PerkaraTable.vue';
 import SupabaseConfigModal from './components/SupabaseConfigModal.vue';
 import { PerkaraService } from './services/perkaraService';
-import { getStoredSupabaseConfig, getSupabase } from './services/supabase';
+import { getStoredSupabaseConfig, getSupabase, subscribeToRealtimeChanges } from './services/supabase';
 import { BA20Penerima, BA20ReceiverStatus, CSVRowData, DocumentStatus, Perkara } from './types';
 
 export default {
@@ -98,7 +91,6 @@ export default {
     PerkaraTable,
     PerkaraFormModal,
     ImportModal,
-    PenerimaModal,
     SupabaseConfigModal,
   },
   data() {
@@ -106,17 +98,17 @@ export default {
       perkaraList: [] as Perkara[],
       loading: false,
 
+      // Supabase Native Realtime & Sync State
+      realtimeStatus: 'CONNECTING',
+      isSyncing: false,
+      realtimeUnsubscribe: null as (() => void) | null,
+
       // Perkara Modal
       showPerkaraModal: false,
       selectedPerkara: null as Perkara | null,
 
       // Import Modal
       showImportModal: false,
-
-      // Penerima Modal
-      showPenerimaModal: false,
-      activePerkaraIdForPenerima: '',
-      selectedPenerima: null as BA20Penerima | null,
 
       // Supabase Config Modal
       showSupabaseModal: false,
@@ -151,16 +143,55 @@ export default {
   mounted() {
     this.checkSupabaseStatus();
     this.loadData();
+    this.setupRealtimeSubscription();
+    window.addEventListener('storage', this.handleStorageEvent);
+  },
+  beforeUnmount() {
+    if (this.realtimeUnsubscribe) {
+      this.realtimeUnsubscribe();
+      this.realtimeUnsubscribe = null;
+    }
+    window.removeEventListener('storage', this.handleStorageEvent);
   },
   methods: {
     checkSupabaseStatus() {
       const cfg = getStoredSupabaseConfig();
       const client = getSupabase();
       this.isSupabaseConnected = !!(client && cfg.url && cfg.anonKey);
+      if (!this.isSupabaseConnected) {
+        this.realtimeStatus = 'OFFLINE_LOCAL';
+      }
     },
-    async checkSupabaseAndReload() {
-      this.checkSupabaseStatus();
-      await this.loadData();
+    setupRealtimeSubscription() {
+      if (this.realtimeUnsubscribe) {
+        this.realtimeUnsubscribe();
+        this.realtimeUnsubscribe = null;
+      }
+
+      if (!this.isSupabaseConnected) {
+        this.realtimeStatus = 'OFFLINE_LOCAL';
+        return;
+      }
+
+      this.realtimeStatus = 'CONNECTING';
+      this.realtimeUnsubscribe = subscribeToRealtimeChanges(
+        (table, payload) => {
+          this.handleRealtimeEvent(table, payload);
+        },
+        (status) => {
+          this.realtimeStatus = status;
+        }
+      );
+    },
+    async handleRealtimeEvent(table: string, payload: any) {
+      try {
+        const freshList = await PerkaraService.getAllPerkara();
+        this.perkaraList = freshList;
+        const tableName = table === 'perkara' ? 'Perkara' : 'Penerima BA-20';
+        this.toastInfo(`Data diperbarui realtime (${tableName})`);
+      } catch (err) {
+        console.warn('Realtime refresh error:', err);
+      }
     },
     async loadData() {
       this.loading = true;
@@ -170,6 +201,28 @@ export default {
         console.error('Failed to load data:', err);
       } finally {
         this.loading = false;
+      }
+    },
+    async handleSyncRefresh() {
+      this.isSyncing = true;
+      try {
+        await this.loadData();
+        this.toastSuccess('Data berhasil disinkronkan.');
+      } finally {
+        this.isSyncing = false;
+      }
+    },
+    async checkSupabaseAndReload() {
+      this.checkSupabaseStatus();
+      await this.loadData();
+      this.setupRealtimeSubscription();
+    },
+    handleStorageEvent(e: StorageEvent) {
+      if (
+        e.key === 'monitoring_p48_perkara_data' ||
+        e.key === 'monitoring_p48_penerima_data'
+      ) {
+        this.loadData();
       }
     },
 
@@ -320,48 +373,64 @@ export default {
     },
 
     // --- PENERIMA BA-20 ---
-    openAddPenerimaModal(perkaraId: string) {
-      this.activePerkaraIdForPenerima = perkaraId;
-      this.selectedPenerima = null;
-      this.showPenerimaModal = true;
-    },
-    openEditPenerimaModal(penerima: BA20Penerima) {
-      this.activePerkaraIdForPenerima = penerima.perkara_id;
-      this.selectedPenerima = { ...penerima };
-      this.showPenerimaModal = true;
-    },
-    closePenerimaModal() {
-      this.showPenerimaModal = false;
-      this.selectedPenerima = null;
-    },
-    async handleSavePenerima(payload: {
-      id?: string;
+    // --- PENERIMA BA-20 (INLINE / TANPA MODAL) ---
+    async handleAddPenerima(payload: {
       perkaraId: string;
       nama_penerima: string;
       status_ba20: BA20ReceiverStatus;
     }) {
-      this.loading = true;
       try {
-        if (payload.id) {
-          await PerkaraService.updatePenerima(payload.id, {
-            nama_penerima: payload.nama_penerima,
-            status_ba20: payload.status_ba20,
-          });
-          this.toastSuccess('Data penerima berhasil diperbarui.');
-        } else {
-          await PerkaraService.addPenerima(payload.perkaraId, payload.nama_penerima, payload.status_ba20);
-          this.toastSuccess('Penerima berhasil ditambahkan.');
+        const newPenerima = await PerkaraService.addPenerima(
+          payload.perkaraId,
+          payload.nama_penerima,
+          payload.status_ba20
+        );
+
+        // Optimistically update current state
+        const p = this.perkaraList.find((item) => item.id === payload.perkaraId);
+        if (p) {
+          if (!p.penerima) p.penerima = [];
+          p.penerima.push(newPenerima);
         }
-        this.closePenerimaModal();
-        await this.loadData();
+
+        this.toastSuccess('Penerima berhasil ditambahkan.');
       } catch (err: any) {
         Swal.fire({
           icon: 'error',
           title: 'Gagal',
           text: err.message || 'Gagal menyimpan penerima barang bukti.',
         });
-      } finally {
-        this.loading = false;
+      }
+    },
+    async handleEditPenerima(payload: {
+      id: string;
+      perkaraId: string;
+      nama_penerima: string;
+      status_ba20: BA20ReceiverStatus;
+    }) {
+      try {
+        await PerkaraService.updatePenerima(payload.id, {
+          nama_penerima: payload.nama_penerima,
+          status_ba20: payload.status_ba20,
+        });
+
+        // Optimistically update current state
+        const p = this.perkaraList.find((item) => item.id === payload.perkaraId);
+        if (p && p.penerima) {
+          const r = p.penerima.find((item) => item.id === payload.id);
+          if (r) {
+            r.nama_penerima = payload.nama_penerima;
+            r.status_ba20 = payload.status_ba20;
+          }
+        }
+
+        this.toastSuccess('Nama penerima berhasil diperbarui.');
+      } catch (err: any) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: err.message || 'Gagal memperbarui penerima.',
+        });
       }
     },
     async confirmDeletePenerima(penerima: BA20Penerima) {
@@ -430,6 +499,19 @@ export default {
       });
       Toast.fire({
         icon: 'success',
+        title: msg,
+      });
+    },
+    toastInfo(msg: string) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: false,
+      });
+      Toast.fire({
+        icon: 'info',
         title: msg,
       });
     },
