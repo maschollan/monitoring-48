@@ -3,7 +3,8 @@
     <!-- Navbar & Metrics -->
     <navbar-header
       :total-count="totalCount"
-      :lelang-count="lelangCount"
+      :rampasan-count="rampasanCount"
+      :lelang-count="rampasanCount"
       :ba20-count="ba20Count"
       :ba23-count="ba23Count"
       :pendapat-hukum-count="pendapatHukumCount"
@@ -122,13 +123,16 @@ export default {
     totalCount(): number {
       return this.perkaraList.length;
     },
-    lelangCount(): number {
+    rampasanCount(): number {
       return this.perkaraList.filter(
         (p) =>
           p.b18_status !== 'tidak_ada' ||
           p.ba21_status !== 'tidak_ada' ||
           p.ba22_status !== 'tidak_ada'
       ).length;
+    },
+    lelangCount(): number {
+      return this.rampasanCount;
     },
     ba20Count(): number {
       return this.perkaraList.filter((p) => p.ba20_status === 'ada').length;
@@ -332,7 +336,7 @@ export default {
         } else if (keys.includes('ba20_status')) {
           this.toastSuccess('Status BA-20 berhasil diperbarui.');
         } else {
-          this.toastSuccess('Status dokumen Lelang berhasil diperbarui.');
+          this.toastSuccess('Status dokumen Rampasan berhasil diperbarui.');
         }
       } catch (err: any) {
         Swal.fire({

@@ -107,6 +107,26 @@ function saveLocalPenerima(list: BA20Penerima[]) {
   localStorage.setItem(LOCAL_STORAGE_PENERIMA, JSON.stringify(list));
 }
 
+// Helper for parsing diverse date formats into timestamp for chronological sorting
+function parseDateForSort(dateStr?: string): number {
+  if (!dateStr) return 0;
+  const str = String(dateStr).trim();
+  const dmyDash = str.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (dmyDash) {
+    return new Date(parseInt(dmyDash[3], 10), parseInt(dmyDash[2], 10) - 1, parseInt(dmyDash[1], 10)).getTime();
+  }
+  const dmySlash = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (dmySlash) {
+    return new Date(parseInt(dmySlash[3], 10), parseInt(dmySlash[2], 10) - 1, parseInt(dmySlash[1], 10)).getTime();
+  }
+  const ymdDash = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (ymdDash) {
+    return new Date(parseInt(ymdDash[1], 10), parseInt(ymdDash[2], 10) - 1, parseInt(ymdDash[3], 10)).getTime();
+  }
+  const parsed = Date.parse(str);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
 // --- MAIN SERVICE CLASS ---
 export class PerkaraService {
   /**
@@ -122,10 +142,11 @@ export class PerkaraService {
           .order('created_at', { ascending: false });
 
         if (!error && data) {
-          return data.map((item: any) => ({
+          const list = data.map((item: any) => ({
             ...item,
             penerima: item.penerima || [],
           }));
+          return list.sort((a: Perkara, b: Perkara) => parseDateForSort(b.tgl_surat) - parseDateForSort(a.tgl_surat));
         }
         console.warn('Supabase fetch returned error, falling back to local store:', error?.message);
       } catch (err) {
@@ -137,10 +158,12 @@ export class PerkaraService {
     const perkaraList = getLocalPerkara();
     const penerimaList = getLocalPenerima();
 
-    return perkaraList.map((p) => ({
+    const list = perkaraList.map((p) => ({
       ...p,
       penerima: penerimaList.filter((rc) => rc.perkara_id === p.id),
     }));
+
+    return list.sort((a, b) => parseDateForSort(b.tgl_surat) - parseDateForSort(a.tgl_surat));
   }
 
   /**

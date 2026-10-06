@@ -2,5 +2,7 @@
   "name": "Monitoring Administrasi Perkara & Dokumen P-48",
   "description": "Sistem monitoring administrasi perkara dan status dokumen P-48, B-18, BA-20, BA-21, BA-22, dan BA-23 berbasis Vue 3 dan Supabase.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

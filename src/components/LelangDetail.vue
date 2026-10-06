@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
       <div class="d-flex align-items-center">
         <i class="bi bi-diagram-3-fill text-primary me-2 fs-6"></i>
-        <strong class="text-dark small">Rincian Dokumen Lelang Perkara</strong>
+        <strong class="text-dark small">Rincian Dokumen Rampasan (B-18 / BA-21 / BA-22)</strong>
         <span class="text-muted small ms-2">({{ nomorRegister }})</span>
       </div>
       <button

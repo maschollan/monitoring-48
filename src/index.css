@@ -155,6 +155,11 @@ i.bi {
   color: #ffffff !important;
 }
 
+.badge-rampasan-ada {
+  background-color: #0d6efd !important;
+  color: #ffffff !important;
+}
+
 /* DataTables styling */
 .table-perkara th {
   background-color: #f1f5f9;

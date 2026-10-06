@@ -75,8 +75,8 @@
         </div>
 
         <div class="d-flex align-items-center px-3 py-2 bg-light rounded border text-muted small">
-          <i class="bi bi-hammer text-warning me-2 fs-6"></i>
-          <span>Lelang Ada/Dibuat: <strong class="text-dark ms-1">{{ lelangCount }}</strong></span>
+          <i class="bi bi-hammer text-primary me-2 fs-6"></i>
+          <span>Rampasan (Ada): <strong class="text-dark ms-1">{{ displayRampasanCount }}</strong></span>
         </div>
 
         <div class="d-flex align-items-center px-3 py-2 bg-light rounded border text-muted small">
@@ -103,6 +103,10 @@ export default {
   name: 'NavbarHeader',
   props: {
     totalCount: {
+      type: Number,
+      default: 0,
+    },
+    rampasanCount: {
       type: Number,
       default: 0,
     },
@@ -180,6 +184,9 @@ export default {
         return 'Realtime Terputus';
       }
       return 'Supabase';
+    },
+    displayRampasanCount(): number {
+      return this.rampasanCount || this.lelangCount || 0;
     },
   },
 };

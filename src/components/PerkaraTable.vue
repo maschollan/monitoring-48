@@ -75,11 +75,11 @@
               </div>
             </th>
 
-            <!-- 4. Lelang -->
-            <th class="table-sortable text-center" @click="toggleSort('lelang_status')" style="min-width: 150px;">
+            <!-- 4. Rampasan -->
+            <th class="table-sortable text-center" @click="toggleSort('rampasan_status')" style="min-width: 155px;">
               <div class="d-flex align-items-center justify-content-center gap-1">
-                <span>Lelang</span>
-                <i :class="getSortIcon('lelang_status')" class="text-muted"></i>
+                <span>Rampasan</span>
+                <i :class="getSortIcon('rampasan_status')" class="text-muted"></i>
               </div>
             </th>
 
@@ -154,25 +154,26 @@
                 </div>
               </td>
 
-              <!-- 4. Lelang (Master Dropdown + Collapse trigger) -->
+              <!-- 4. Rampasan (Master Dropdown: Ada / Tidak Ada + Collapse Button) -->
               <td class="text-center">
                 <div class="d-flex flex-column align-items-center gap-1">
-                  <!-- Master Dropdown -->
+                  <!-- Master Dropdown: Ada / Tidak Ada -->
                   <status-badge-dropdown
-                    :model-value="getLelangStatus(item)"
-                    type="document"
-                    @change="(newVal) => handleMasterLelangChange(item, newVal)"
+                    :model-value="getRampasanStatus(item)"
+                    type="rampasan"
+                    @change="(newVal) => handleMasterRampasanChange(item, newVal)"
                   />
-                  <!-- Collapse Button jika status bukan 'tidak_ada' -->
+                  <!-- Toggle Collapse Button: Styled like Dikembalikan with another color (primary blue) -->
                   <button
-                    v-if="getLelangStatus(item) !== 'tidak_ada'"
+                    v-if="getRampasanStatus(item) === 'ada'"
                     type="button"
-                    class="btn btn-link btn-sm p-0 text-decoration-none d-flex align-items-center gap-1 mt-1"
-                    style="font-size: 0.72rem;"
-                    @click="toggleCollapseLelang(item.id)"
+                    class="btn btn-sm btn-outline-primary py-1 px-3 mt-1 d-flex align-items-center"
+                    style="font-size: 0.72rem; border-radius: 9999px;"
+                    @click="toggleCollapseRampasan(item.id)"
                   >
+                    <i class="bi bi-diagram-3-fill me-2"></i>
                     <span>Rincian B-18/BA-21/BA-22</span>
-                    <i :class="activeCollapseLelang === item.id ? 'bi-chevron-up' : 'bi-chevron-down'" class="ms-1"></i>
+                    <i :class="activeCollapseRampasan === item.id ? 'bi-chevron-up' : 'bi-chevron-down'" class="ms-2"></i>
                   </button>
                 </div>
               </td>
@@ -243,8 +244,8 @@
               </td>
             </tr>
 
-            <!-- COLLAPSE ROW: Lelang Detail -->
-            <tr v-if="activeCollapseLelang === item.id" class="bg-light">
+            <!-- COLLAPSE ROW: Rampasan Detail -->
+            <tr v-if="activeCollapseRampasan === item.id" class="bg-light">
               <td colspan="8" class="p-0 border-0">
                 <lelang-detail
                   :perkara-id="item.id"
@@ -253,7 +254,7 @@
                   :ba21-status="item.ba21_status"
                   :ba22-status="item.ba22_status"
                   @update-sub-doc="(payload) => handleSubDocUpdate(item, payload)"
-                  @close="activeCollapseLelang = null"
+                  @close="activeCollapseRampasan = null"
                 />
               </td>
             </tr>
@@ -358,7 +359,7 @@ export default {
       currentPage: 1,
       sortBy: 'tgl_surat',
       sortAsc: false,
-      activeCollapseLelang: null as string | null,
+      activeCollapseRampasan: null as string | null,
       activeCollapseBA20: null as string | null,
     };
   },
@@ -383,21 +384,28 @@ export default {
 
       // 2. Sort
       list = [...list].sort((a, b) => {
+        if (this.sortBy === 'tgl_surat') {
+          const timeA = this.parseDateToTimestamp(a.tgl_surat);
+          const timeB = this.parseDateToTimestamp(b.tgl_surat);
+          if (timeA !== timeB) {
+            return this.sortAsc ? timeA - timeB : timeB - timeA;
+          }
+          // Tie-breaker: nomor register perkara
+          return (a.nomor_register_perkara || '').localeCompare(b.nomor_register_perkara || '');
+        }
+
         let valA: string = '';
         let valB: string = '';
 
         if (this.sortBy === 'nomor_surat') {
           valA = a.nomor_surat || '';
           valB = b.nomor_surat || '';
-        } else if (this.sortBy === 'tgl_surat') {
-          valA = a.tgl_surat || '';
-          valB = b.tgl_surat || '';
         } else if (this.sortBy === 'nama_terpidana') {
           valA = a.nama_terpidana || '';
           valB = b.nama_terpidana || '';
-        } else if (this.sortBy === 'lelang_status') {
-          valA = this.getLelangStatus(a);
-          valB = this.getLelangStatus(b);
+        } else if (this.sortBy === 'rampasan_status' || this.sortBy === 'lelang_status') {
+          valA = this.getRampasanStatus(a);
+          valB = this.getRampasanStatus(b);
         } else if (this.sortBy === 'ba20_status') {
           valA = a.ba20_status || '';
           valB = b.ba20_status || '';
@@ -449,12 +457,49 @@ export default {
     },
   },
   methods: {
+    parseDateToTimestamp(dateStr?: string): number {
+      if (!dateStr) return 0;
+      const str = String(dateStr).trim();
+      if (!str) return 0;
+
+      // 1. Format DD-MM-YYYY (contoh: 05-10-2026 atau 5-10-2026)
+      const dmyDash = str.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+      if (dmyDash) {
+        const day = parseInt(dmyDash[1], 10);
+        const month = parseInt(dmyDash[2], 10) - 1;
+        const year = parseInt(dmyDash[3], 10);
+        return new Date(year, month, day).getTime();
+      }
+
+      // 2. Format DD/MM/YYYY (contoh: 05/10/2026)
+      const dmySlash = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (dmySlash) {
+        const day = parseInt(dmySlash[1], 10);
+        const month = parseInt(dmySlash[2], 10) - 1;
+        const year = parseInt(dmySlash[3], 10);
+        return new Date(year, month, day).getTime();
+      }
+
+      // 3. Format YYYY-MM-DD (contoh: 2026-10-05)
+      const ymdDash = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (ymdDash) {
+        const year = parseInt(ymdDash[1], 10);
+        const month = parseInt(ymdDash[2], 10) - 1;
+        const day = parseInt(ymdDash[3], 10);
+        return new Date(year, month, day).getTime();
+      }
+
+      // 4. Standar fallback
+      const parsed = Date.parse(str);
+      return isNaN(parsed) ? 0 : parsed;
+    },
     toggleSort(col: string) {
       if (this.sortBy === col) {
         this.sortAsc = !this.sortAsc;
       } else {
         this.sortBy = col;
-        this.sortAsc = true;
+        // Jika kolom tanggal surat, saat diklik default-nya adalah descending (tanggal terbaru di atas)
+        this.sortAsc = col === 'tgl_surat' ? false : true;
       }
     },
     getSortIcon(col: string): string {
@@ -472,39 +517,45 @@ export default {
       }
       return val;
     },
-    getLelangStatus(item: Perkara): DocumentStatus {
+    getRampasanStatus(item: Perkara): 'tidak_ada' | 'ada' {
       const docs = [item.b18_status, item.ba21_status, item.ba22_status];
-      // If any is 'sudah_dibuat'
-      if (docs.some((s) => s === 'sudah_dibuat')) {
-        return 'sudah_dibuat';
-      }
-      // If any is 'belum_dibuat'
-      if (docs.some((s) => s === 'belum_dibuat')) {
-        return 'belum_dibuat';
+      if (docs.some((s) => s === 'belum_dibuat' || s === 'sudah_dibuat')) {
+        return 'ada';
       }
       return 'tidak_ada';
     },
-    handleMasterLelangChange(item: Perkara, newVal: string) {
-      // Sesuai requirement 9:
-      // Jika Lelang = Tidak Ada: Maka B-18 = Tidak Ada, BA-21 = Tidak Ada, BA-22 = Tidak Ada
-      // Jika Lelang = Belum Dibuat: Maka ketiganya belum dibuat
-      // Jika Lelang = Sudah Dibuat: Kelola sesuai kebutuhan
-      const status = newVal as DocumentStatus;
-      this.$emit('update-status', {
-        id: item.id,
-        updates: {
-          b18_status: status,
-          ba21_status: status,
-          ba22_status: status,
-        },
-      });
+    handleMasterRampasanChange(item: Perkara, newVal: string) {
+      if (newVal === 'tidak_ada') {
+        this.$emit('update-status', {
+          id: item.id,
+          updates: {
+            b18_status: 'tidak_ada',
+            ba21_status: 'tidak_ada',
+            ba22_status: 'tidak_ada',
+          },
+        });
 
-      if (status === 'tidak_ada' && this.activeCollapseLelang === item.id) {
-        this.activeCollapseLelang = null;
+        if (this.activeCollapseRampasan === item.id) {
+          this.activeCollapseRampasan = null;
+        }
+      } else {
+        // newVal === 'ada'
+        const updates: Partial<Perkara> = {};
+        if (item.b18_status === 'tidak_ada' && item.ba21_status === 'tidak_ada' && item.ba22_status === 'tidak_ada') {
+          updates.b18_status = 'belum_dibuat';
+        }
+        if (Object.keys(updates).length > 0) {
+          this.$emit('update-status', {
+            id: item.id,
+            updates,
+          });
+        }
+        // Buka collapse rinciannya agar pengguna dapat mengelola sub-dokumen B-18, BA-21, BA-22
+        this.activeCollapseRampasan = item.id;
       }
     },
-    toggleCollapseLelang(id: string) {
-      this.activeCollapseLelang = this.activeCollapseLelang === id ? null : id;
+    toggleCollapseRampasan(id: string) {
+      this.activeCollapseRampasan = this.activeCollapseRampasan === id ? null : id;
     },
     handleSubDocUpdate(item: Perkara, payload: { field: string; value: string }) {
       this.$emit('update-status', {

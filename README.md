@@ -13,8 +13,8 @@ Dibangun menggunakan **Vue.js 3 (Options API)**, **Bootstrap 5.3**, **Bootstrap 
      1. **Nomor P-48** (Nomor Surat & Nomor Register Perkara)
      2. **Tanggal** (Tanggal Surat Putusan/Perintah)
      3. **Nama Terpidana** (Mendukung nama tunggal maupun jamak tersusun berbaris)
-     4. **Lelang** (Dropdown utama + Panel Collapse rincian **B-18**, **BA-21**, **BA-22**)
-     5. **Dikembalikan BA-20** (Dropdown status + Panel Collapse daftar multi-penerima barang bukti)
+     4. **Rampasan** (Dropdown status Ada / Tidak Ada + Tombol Collapse rincian **B-18**, **BA-21**, **BA-22**)
+     5. **Dikembalikan BA-20** (Dropdown status Ada / Tidak Ada + Panel Collapse daftar multi-penerima barang bukti)
      6. **Dimusnahkan BA-23** (Dropdown status langsung)
      7. **Pendapat Hukum** (Dropdown status langsung)
      8. **Aksi** (Edit data perkara & Hapus perkara)
@@ -23,10 +23,11 @@ Dibangun menggunakan **Vue.js 3 (Options API)**, **Bootstrap 5.3**, **Bootstrap 
    - **Multi-Column Sorting**: Pengurutan instan untuk seluruh kolom.
    - **Badge Dropdown Langsung**: Status dokumen dapat diubah langsung dari tabel tanpa modal, tersimpan seketika.
 
-2. **Pengelompokan & Collapse Dokumen Lelang**:
-   - Kolom **Lelang** mengelompokkan dokumen: **B-18**, **BA-21**, dan **BA-22**.
-   - Jika Lelang diatur ke *Tidak Ada*, ketiga sub-dokumen otomatis berstatus *Tidak Ada*.
-   - Mengklik tombol *Rincian B-18/BA-21/BA-22* membuka Bootstrap Collapse untuk mengelola masing-masing sub-dokumen secara terperinci.
+2. **Pengelompokan & Collapse Dokumen Rampasan (Lelang)**:
+   - Kolom **Rampasan** memiliki opsi status **Tidak Ada** dan **Ada** dengan badge visual profesional.
+   - Mengelompokkan dokumen eksekusi rampasan/lelang: **B-18**, **BA-21**, dan **BA-22**.
+   - Jika Rampasan diatur ke *Tidak Ada*, ketiga sub-dokumen otomatis berstatus *Tidak Ada*.
+   - Jika Rampasan diatur ke *Ada*, muncul tombol toggle collapse berdesain pill (`btn-outline-primary`) untuk membuka dan mengelola rincian dokumen **B-18**, **BA-21**, dan **BA-22** secara mendetail.
 
 3. **Manajemen Multi-Penerima Barang Bukti (BA-20) Langsung (Tanpa Modal)**:
    - Jika kolom **Dikembalikan BA-20** berstatus *Ada*, muncul tombol *Detail Penerima*.

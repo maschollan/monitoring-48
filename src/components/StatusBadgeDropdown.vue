@@ -39,7 +39,7 @@ export default {
   emits: ['update:modelValue', 'change'],
   computed: {
     options(): { value: string; label: string }[] {
-      if (this.type === 'ba20') {
+      if (this.type === 'ba20' || this.type === 'rampasan') {
         return [
           { value: 'tidak_ada', label: 'Tidak Ada' },
           { value: 'ada', label: 'Ada' },
@@ -51,7 +51,7 @@ export default {
           { value: 'sudah_dibuat', label: 'Sudah Dibuat' },
         ];
       }
-      // Standard document (B-18, BA-21, BA-22, BA-23, Pendapat Hukum, Lelang)
+      // Standard document (B-18, BA-21, BA-22, BA-23, Pendapat Hukum)
       return [
         { value: 'tidak_ada', label: 'Tidak Ada' },
         { value: 'belum_dibuat', label: 'Belum Dibuat' },
@@ -62,6 +62,11 @@ export default {
       if (this.type === 'ba20') {
         return this.modelValue === 'ada'
           ? 'badge-ada'
+          : 'badge-tidak-ada';
+      }
+      if (this.type === 'rampasan') {
+        return this.modelValue === 'ada'
+          ? 'badge-rampasan-ada'
           : 'badge-tidak-ada';
       }
       switch (this.modelValue) {
