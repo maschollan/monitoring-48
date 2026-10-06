@@ -1,0 +1,132 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+:root {
+  --app-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bs-body-font-family: var(--app-font);
+}
+
+body {
+  font-family: var(--app-font);
+  color: #1e293b;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+/* Badge selector dropdown styling */
+.status-badge-select {
+  border-radius: 9999px;
+  font-size: 0.785rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease-in-out;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  background-position: right 0.45rem center;
+  background-repeat: no-repeat;
+  background-size: 10px 10px;
+}
+
+.status-badge-select:focus {
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.badge-tidak-ada {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+}
+
+.badge-belum-dibuat {
+  background-color: #f59e0b !important;
+  color: #1e293b !important;
+}
+
+.badge-sudah-dibuat {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+.badge-ada {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+}
+
+/* DataTables styling */
+.table-perkara th {
+  background-color: #f1f5f9;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.825rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+  border-bottom: 2px solid #cbd5e1;
+  white-space: nowrap;
+}
+
+.table-perkara td {
+  vertical-align: middle;
+  font-size: 0.875rem;
+  padding: 0.75rem 0.65rem;
+  border-color: #e2e8f0;
+}
+
+.table-perkara tr:hover {
+  background-color: #f8fafc;
+}
+
+.table-sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.table-sortable:hover {
+  background-color: #e2e8f0;
+}
+
+.collapse-detail-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Card metrics */
+.metric-card {
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Modal and inputs */
+.form-label {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #334155;
+  margin-bottom: 0.35rem;
+}
+
+.form-control, .form-select {
+  font-size: 0.875rem;
+  border-color: #cbd5e1;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Multi-line convicts display */
+.convict-name {
+  white-space: pre-line;
+  line-height: 1.35;
+}
